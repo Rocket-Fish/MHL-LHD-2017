@@ -18,13 +18,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private static final int DEFAULT_ZOOM = 15;
@@ -59,6 +61,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 post.execute(params);
             }
         });
+        mMap.setOnMarkerClickListener(this);
     }
 
 
@@ -114,6 +117,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         updateLocationUI();
+    }
+
+    public void addMarker(LatLng coordinates, String name){
+        mMap.addMarker(new MarkerOptions()
+                .position(coordinates)
+                .title(name));
+
     }
 
     private void updateLocationUI() {
@@ -173,4 +183,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        // Open Dialog showing information.
+    }
 }
