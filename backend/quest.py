@@ -1,3 +1,5 @@
+import datetime
+
 class Quest():
     def __init__(self, name, description, reward, latitude, longtitude, username):
         self._name = name
@@ -7,6 +9,7 @@ class Quest():
         self._longtitude = longtitude
         self._username = username
         self._in_progress = True
+        self._time_created = str(datetime.datetime.now())
 
     def get_location(self):
         return (self._latitude, self._longtitude)
