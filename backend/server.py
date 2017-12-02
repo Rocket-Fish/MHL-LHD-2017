@@ -19,6 +19,8 @@ def get_quests():
 def new_quest():
     global counter
     global id_to_quest
+    print(request.form)
+
     id_to_quest[counter] = Quest(
         str(request.form.get('name')),
         str(request.form.get('description')),
@@ -34,7 +36,7 @@ def new_quest():
 def delete_quest():
     global id_to_quest
     identity = request.form.get('id')
-    del id_to_quest[identity]
+    del id_to_quest[int(identity)]
 
 
 def get_nearby_quests(latitude, longitude):
