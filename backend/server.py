@@ -12,7 +12,7 @@ def get_quests():
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
     print(latitude, longitude)
-    return jsonpickle.encode(get_nearby_quests(latitude, longitude))
+    return jsonpickle.encode(get_nearby_quests(float(latitude), float(longitude)))
 
 
 @app.route("/quests/new", methods=['POST'])
