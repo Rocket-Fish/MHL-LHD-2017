@@ -22,11 +22,11 @@ def new_quest():
     id_to_quest[counter] = Quest(
         str(request.form.get('name')),
         str(request.form.get('description')),
-        float(request.form.get('reward')),
+        str(request.form.get('reward')),
         float(request.form.get('latitude')),
         float(request.form.get('longitude')),
         str(request.form.get('username')))
-        
+
     counter += 1
     return str(counter - 1)
 
