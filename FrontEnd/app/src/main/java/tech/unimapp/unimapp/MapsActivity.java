@@ -1,5 +1,7 @@
 package tech.unimapp.unimapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,7 +11,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -22,8 +29,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import java.io.IOException;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -51,23 +56,55 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         getLocationPermission();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-
         FloatingActionButton fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                createForm(view);
                 String[] params = {"name=1234", "description=1234", "reward=1234", "latitude=12", "longitude=12", "username=asdf"};
                 Post post = new Post(WEBSITE_URL+"new");
                 post.execute(params);
             }
         });
-        mMap.setOnMarkerClickListener(this);
     }
 
 
+    public void createForm(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        LayoutInflater inflater = this.getLayoutInflater();
 
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialogue_input, null))
+                // Add action buttons
+                .setPositiveButton("submit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        // submit in the user ...
 
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // do nothing
+                    }
+                });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        final EditText longit = alertDialog.findViewById(R.id.longit);
+        final EditText lat = alertDialog.findViewById(R.id.lat);
+        Button changeLatLong =alertDialog.findViewById(R.id.gCR);
+        changeLatLong.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                longit.setText(String.valueOf(mLastKnownLocation!=null?mLastKnownLocation.getLongitude():mDefaultLocation.longitude));
+                lat.setText(String.valueOf(mLastKnownLocation!=null?mLastKnownLocation.getLatitude():mDefaultLocation.latitude));
+            }
+        });
+    }
 
     /**
      * Manipulates the map once available.
@@ -83,6 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         getDeviceLocation();
         updateLocationUI();
+        mMap.setOnMarkerClickListener(this);
     }
 
     private void getLocationPermission() {
@@ -186,5 +224,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         // Open Dialog showing information.
+        return false;
     }
 }
