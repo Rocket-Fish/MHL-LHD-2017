@@ -20,12 +20,13 @@ def new_quest():
     global counter
     global id_to_quest
     id_to_quest[counter] = Quest(
-        request.form.get('name'),
-        request.form.get('description'),
-        request.form.get('reward'),
-        request.form.get('latitude'),
-        request.form.get('longitude'),
-        request.form.get('username'))
+        str(request.form.get('name')),
+        str(request.form.get('description')),
+        float(request.form.get('reward')),
+        float(request.form.get('latitude')),
+        float(request.form.get('longitude')),
+        str(request.form.get('username')))
+        
     counter += 1
     return str(counter - 1)
 
@@ -38,6 +39,7 @@ def delete_quest():
 
 def get_nearby_quests(latitude, longitude):
     return_quests = []
+    global id_to_quest
     for identity in id_to_quest:
         quest = id_to_quest[identity]
         (quest_latitude, quest_longitude) = quest.get_location()
@@ -45,4 +47,4 @@ def get_nearby_quests(latitude, longitude):
                 0.01 and abs(longitude - quest_longitude) <= 0.01):
             return_quests.append(quest)
 
-    return jsonpickle.encode(return_quests)
+    return return_quests
