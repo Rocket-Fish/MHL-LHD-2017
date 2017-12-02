@@ -10,9 +10,9 @@ counter = 0
 @app.route("/quests/view", methods=['GET'])
 def get_quests():
     latitude = request.args.get('latitude')
-    longtitude = request.args.get('longtitude')
-    print(latitude, longtitude)
-    return jsonpickle.encode(get_nearby_quests(latitude, longtitude))
+    longitude = request.args.get('longitude')
+    print(latitude, longitude)
+    return jsonpickle.encode(get_nearby_quests(latitude, longitude))
 
 
 @app.route("/quests/new", methods=['POST'])
@@ -24,9 +24,8 @@ def new_quest():
         request.form.get('description'),
         request.form.get('reward'),
         request.form.get('latitude'),
-        request.form.get('longtitude'),
+        request.form.get('longitude'),
         request.form.get('username'))
-
     counter += 1
     return str(counter - 1)
 
@@ -37,13 +36,13 @@ def delete_quest():
     del id_to_quest[identity]
 
 
-def get_nearby_quests(latitude, longtitude):
+def get_nearby_quests(latitude, longitude):
     return_quests = []
     for identity in id_to_quest:
         quest = id_to_quest[identity]
-        (quest_latitude, quest_longtitude) = quest.get_location()
+        (quest_latitude, quest_longitude) = quest.get_location()
         if (abs(latitude - quest_latitude) <=
-                0.01 and abs(longtitude - quest_longtitude) <= 0.01):
+                0.01 and abs(longitude - quest_longitude) <= 0.01):
             return_quests.append(quest)
 
     return jsonpickle.encode(return_quests)
