@@ -116,21 +116,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     @Override
                     public void onResponse(JSONArray response) {
 
-                        // Process the JSON
-                        try{
-                            // Loop through the array elements
-                            for(int i=0;i<response.length();i++){
-                                // Get current json object
+                        // Loop through the array elements
+                        for(int i=0;i<response.length();i++){
+                            // Get current json object
+                            // Process the JSON
+                            try{
                                 JSONObject quest = response.getJSONObject(i);
 
                                 // Get the current student (json object) data
                                 String lat = quest.getString("_latitude");
                                 String lng = quest.getString("_longitude");
                                 String name = quest.getString("_name");
-                                addMarker(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), name);
+                                String des = quest.get("_description") + " - Reward: " + quest.get("_reward");
+                                addMarker(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), name, des);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
 
                     }
@@ -246,11 +247,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         updateLocationUI();
     }
 
-    public void addMarker(LatLng coordinates, String name){
+    public void addMarker(LatLng coordinates, String name, String snippet){
         mMap.addMarker(new MarkerOptions()
                 .position(coordinates)
-                .title(name));
-
+                .title(name)
+                .snippet(snippet));
     }
 
     private void updateLocationUI() {
