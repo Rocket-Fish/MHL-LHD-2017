@@ -61,14 +61,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 createForm(view);
-                String[] params = {"name=1234", "description=1234", "reward=1234", "latitude=12", "longitude=12", "username=asdf"};
-                Post post = new Post(WEBSITE_URL+"new");
-                post.execute(params);
             }
         });
     }
 
-
+    EditText name, description, reward, lat, lon, user;
     public void createForm(View view){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -81,8 +78,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPositiveButton("submit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // submit in the user ...
-
+                        String[] params = {"name="+name.getText(),
+                                "description="+description.getText(),
+                                "reward="+reward.getText(),
+                                "latitude="+lat.getText(),
+                                "longitude="+lon.getText(),
+                                "username="+user.getText()};
+                        Post post = new Post(WEBSITE_URL+"new");
+                        post.execute(params);
                     }
                 })
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -104,7 +107,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 lat.setText(String.valueOf(mLastKnownLocation!=null?mLastKnownLocation.getLatitude():mDefaultLocation.latitude));
             }
         });
+        this.lat = lat;
+        this.lon = longit;
+        name = alertDialog.findViewById(R.id.name);
+        description = alertDialog.findViewById(R.id.description);
+        reward = alertDialog.findViewById(R.id.reward);
+        user = alertDialog.findViewById(R.id.username);
     }
+
 
     /**
      * Manipulates the map once available.
