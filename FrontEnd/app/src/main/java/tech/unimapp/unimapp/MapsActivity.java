@@ -1,10 +1,14 @@
 package tech.unimapp.unimapp;
 
 import android.app.AlertDialog;
+import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +22,17 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -29,6 +44,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.xml.transform.ErrorListener;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -63,6 +84,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 createForm(view);
             }
         });
+
+        FloatingActionButton refresh = findViewById(R.id.refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                update();
+            }
+        });
+    }
+
+    public void update() {
+        RequestQueue mRequestQueue;
+
+// Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+// Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+// Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+// Start the queue
+        mRequestQueue.start();
+
+        String url =WEBSITE_URL+"view?latitude="+mLastKnownLocation.getLatitude()+"&longitude="+mLastKnownLocation.getLongitude();
+        JsonArrayRequest jsObjRequest = new JsonArrayRequest
+                (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+
+                    @Override
+                    public void onResponse(JSONArray response) {
+
+                        // Process the JSON
+                        try{
+                            // Loop through the array elements
+                            for(int i=0;i<response.length();i++){
+                                // Get current json object
+                                JSONObject quest = response.getJSONObject(i);
+
+                                // Get the current student (json object) data
+                                String lat = quest.getString("_latitude");
+                                String lng = quest.getString("_longitude");
+                                String name = quest.getString("_name");
+                                addMarker(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), name);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error.toString());
+                    }
+                });
+
+        mRequestQueue.add(jsObjRequest);
     }
 
     EditText name, description, reward, lat, lon, user;
