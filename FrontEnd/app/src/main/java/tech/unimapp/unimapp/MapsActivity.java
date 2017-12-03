@@ -95,6 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void update() {
+        mMap.clear();
         RequestQueue mRequestQueue;
 
 // Instantiate the cache
